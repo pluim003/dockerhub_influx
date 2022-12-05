@@ -63,3 +63,15 @@ If you get this error:
 Traceback (most recent call last): File "./dockerhub_influx.py", line 8, in <module> import requests ImportError: No module named requests
 
 You'll need to install the python-requests module.
+
+### Credits
+
+Credits go to https://github.com/chrisbergeron/ for supplying the pihole_influx-script. After some modifications earlier I decided to make it suitable to get Dockerhub-statistics
+
+### Background
+
+I used the docker-hub-exporter for a while which exports data to a Promotheus-database. Created by https://github.com/badsmoke . But didn't like the way stuff was stored and with zero knowledge of golang I couldn't get it the way I wanted it.
+
+### To do
+
+Maybe enter a username instead of image-names to get all images by a specific user.
