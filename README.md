@@ -20,7 +20,7 @@ Configuration options above can be specified within the environment section of t
 
 Run:
 
-Make a subdirectory for your installation
+Create a subdirectory for your installation
 Create and edit docker-compose.yml to your needs
 
 ``` bash
@@ -43,6 +43,10 @@ To run dockerhub_influx.py from the command line without the startup script:
 
 I only use the docker-variant.
 You could instal this script in /opt/dockerhub_influx. If you put it somewhere else you'll have to update the systemD startup script.
+
+### Note
+
+I have only tested this script to export to InfluxDB v1.8. I'm running a container with Influxdb 1.8.10 and latest versions of Grafana and Telegraf, but I couldn't get that one upgraded properly to an InfluxDB v2.x-container. I might give it another try in the future.
 
 ### Troubleshooting
 
