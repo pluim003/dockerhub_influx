@@ -27,3 +27,39 @@ Create and edit docker-compose.yml to your needs
 docker-compose up -d
 ```
 
+Configuration options above can be specified within the environment section of the compose file.
+
+dockerhub-influx.service - A SystemD Unit File for starting dockerhub_influx at boot (and logging) On Centos7, put this file in /lib/systemd/system/.
+
+Run:
+
+systemctl daemon-reload
+systemctl enable dockerhub-influx
+systemctl start dockerhub-influx
+
+To run dockerhub_influx.py from the command line without the startup script:
+
+/usr/bin/python ./dockerhub_influx.py
+
+I only use the docker-variant.
+You could instal this script in /opt/dockerhub_influx. If you put it somewhere else you'll have to update the systemD startup script.
+
+### Troubleshooting
+
+If you get the following error:
+
+Traceback (most recent call last): File "./dockerhub_influx.py", line 11, in <module> from influxdb import InfluxDBClient
+
+You'll need to install the python-influxdb module for python. On a raspberry pi, you can do this with:
+
+sudo apt-get install python-influxdb
+
+Or on CentOS / RHEL:
+
+yum install python-influxdb
+
+If you get this error:
+
+Traceback (most recent call last): File "./dockerhub_influx.py", line 8, in <module> import requests ImportError: No module named requests
+
+You'll need to install the python-requests module.
