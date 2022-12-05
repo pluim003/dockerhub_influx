@@ -23,7 +23,8 @@ _DEFAULTS = {
     'INFLUXDB_PASSWORD': "password",
     'INFLUXDB_DATABASE': "piholestats",
     'DELAY': 600,  # seconds
-    'DOCKERHUB_IMAGES': ["pluim003/dockerhub_influx"],  # Dockerhub images 
+    'DOCKERHUB_IMAGES': [],  # Dockerhub images 
+    'DOCKERHUB_USERS': [],  # Dockerhub users 
 }
 
 
@@ -44,9 +45,16 @@ def get_config():
         if var_name == 'DOCKERHUB_IMAGES' and ',' in config[var_name]:
             config[var_name] = config[var_name].split(',')
 
+        if var_name == 'DOCKERHUB_USERS' and ',' in config[var_name]:
+            config[var_name] = config[var_name].split(',')
+
     # Make sure DOCKERHUB_IMAGES is a list (even if it's just one entry)
     if not isinstance(config['DOCKERHUB_IMAGES'], list):
         config['DOCKERHUB_IMAGES'] = [config['DOCKERHUB_IMAGES']]
+
+    # Make sure DOCKERHUB_USERS is a list (even if it's just one entry)
+    if not isinstance(config['DOCKERHUB_USERS'], list):
+        config['DOCKERHUB_USERS'] = [config['DOCKERHUB_USERS']]
 
     return config
 
@@ -114,7 +122,10 @@ if __name__ == '__main__':
 
     # Get configuration details
     config = get_config()
+    number_of_users = len(config['DOCKERHUB_USERS']) 
     number_of_images = len(config['DOCKERHUB_IMAGES'])
+
+    logger.info("Querying {} dockerhub users: {}".format(len(config['DOCKERHUB_USERS']), config['DOCKERHUB_USERS']))
     logger.info("Querying {} dockerhub images: {}".format(len(config['DOCKERHUB_IMAGES']), config['DOCKERHUB_IMAGES']))
     logger.info("Logging to InfluxDB server {}:{}".format(
         config['INFLUXDB_SERVER'], config['INFLUXDB_PORT']
@@ -125,6 +136,37 @@ if __name__ == '__main__':
     
     # Loop pulling stats from dockerhub, and pushing to influxdb
     while True:
+        # loop through users
+        i = 0
+        for i in range(number_of_users):
+            user = config['DOCKERHUB_USERS'][i]
+            # Get Dockerhub Stats
+            dockerhub_api = "https://hub.docker.com/v2/repositories/{}".format(user)
+            logger.info("Attemping to contact {} with URL {}".format(user, dockerhub_api))
+            api = requests.get(dockerhub_api)  # URI to dockerhub server api
+#            logger.info("API-result: {}".format(api))
+            API_out = api.json()
+            count = (API_out['count'])
+#            logger.info("count: {}".format(count))
+            results = (API_out['results'])
+            j = 0 
+            for j in range(count):
+#                logger.debug("result {}: {}".format(j, results[j]))
+
+                # Get Dockerhub Stats per image
+                user = results[j]['namespace'] 
+                image = user + "/" + results[j]['name'] 
+                name = results[j]['name']
+                pull_count = results[j]['pull_count']
+                star_count = results[j]['star_count']
+                last_updated = results[j]['last_updated']
+                status = results[j]['status']
+                # Update DB
+                send_msg(config, logger, image, user, name, pull_count, star_count, last_updated, status)
+                j = j + 1
+
+        i = i + 1
+
         i = 0
         for i in range(number_of_images): 
             image = config['DOCKERHUB_IMAGES'][i]

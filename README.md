@@ -12,11 +12,13 @@ INFLUXDB_USERNAME = "username"
 INFLUXDB_PASSWORD = "password"
 INFLUXDB_DATABASE = "piholestats"
 DELAY = 600 # seconds
-DOCKERHUB_IMAGES = "pluim003/dockerhub_influx" # Dockerhub image(s) to report in InfluxDB for each measurement. Comma separated list.
+DOCKERHUB_IMAGES = "ubuntu/nginx" # Dockerhub image(s) to report in InfluxDB for each measurement. Comma separated list.
+DOCKERHUB_USERS = "pluim003" # Dockerhub user(s) to report in InfluxDB. The script will scan all images owned by this user and report in InfluxDB for each measurement. Comma separated list.
 ```
 *docker-compose.yml* - An example Docker setup to run this script
 
 Configuration options above can be specified within the environment section of the compose file.
+You can use both options, or you can leave one of those options empty, e.g. commenting out f.e. DOCKERHUB_USERS if you want only to get statistics of specific images. To report statistics from all images by a specific users it's wise to use the environment variable DOCKERHUB_USERS.
 
 Run:
 
@@ -76,6 +78,3 @@ Credits go to https://github.com/chrisbergeron/ for supplying the pihole_influx-
 
 I used the docker-hub-exporter for a while which exports data to a Promotheus-database. Created by https://github.com/badsmoke . But didn't like the way stuff was stored and with zero knowledge of golang I couldn't get it the way I wanted it.
 
-### To do
-
-Maybe enter a username instead of image-names to get all images by a specific user.

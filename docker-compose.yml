@@ -11,3 +11,4 @@ services:
       - INFLUXDB_DATABASE=dockerhubstats
       - DELAY=600
       - DOCKERHUB_IMAGES=pluim003/dockerhub_influx,pluim003/pihole_unbound
+      - DOCKERHUB_USERS=pluim003
